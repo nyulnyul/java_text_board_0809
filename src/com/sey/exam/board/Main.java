@@ -22,15 +22,21 @@ class Article {
 }
 
 public class Main {
+  static void TestDatelist(ArrayList<Article> articles){
+    articles.add(new Article(1, "wae", "asd"));
+    articles.add(new Article(2, "wae2", "asd"));
+    articles.add(new Article(3, "wae3", "asd"));
+
+  }
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
     int articleLastId = 0;
     Article lastarticle = null;
 
+
+
     ArrayList<Article> articles = new ArrayList<>();
-    articles.add(new Article(1, "wae", "asd"));
-    articles.add(new Article(2, "wae2", "asd"));
-    articles.add(new Article(3, "wae3", "asd"));
+    TestDatelist(articles);
 
 
     System.out.println("== 게시판 v 0.1 ==");
@@ -74,7 +80,8 @@ public class Main {
         System.out.println("---------------");
         System.out.println("번호 / 제목 / 내용");
         System.out.println("---------------");
-        for (Article article : articles) {
+        for (int i = articles.size()-1; i >= 0; i-- ) {
+          Article article = articles.get(i);
           System.out.printf("%d/제목 : %s/ 내용 : %s\n", article.id, article.title , article.body);
           continue;
 
