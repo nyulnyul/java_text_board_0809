@@ -30,102 +30,124 @@ public class Main {
 
       if (rq.getUrlPath().equals("exit")) {
         break;
-      } else if (rq.getUrlPath().equals("/usr/article/write")) {
-
-      } else if (rq.getUrlPath().equals("/usr/article/list")) {
-        System.out.println("== 게시물 리스트 ==");
-        System.out.println("-------------------");
-        System.out.println("번호 / 제목 / 내용");
-        System.out.println("-------------------");
-
-        //검색시작
-        List<Article> fileredArticles = articles;
-
-        if(params.containsKey("searchKeyword")) {
-          String searchKeyword = params.get("searchKeyword");
-
-          fileredArticles = new ArrayList<>();
-          for (Article article: articles) {
-            boolean matched = article.title.contains(searchKeyword) || article.body.contains(searchKeyword);
-
-            if (matched){
-              fileredArticles.add(article);
-            }
-
-          }
-
-        }
-        //검색끝
-
-        List<Article> sortedArticles =fileredArticles;
-
-        boolean orderByIdDesc = true;
-
-        if(params.containsKey("orderBy") && params.get("orderBy").equals("idAsc")){
-          orderByIdDesc =false;
-
-        }
-        if(orderByIdDesc){
-          sortedArticles = Util.reverseList(sortedArticles);
-        }
-        for (Article article: sortedArticles) {
-          System.out.printf("%d/ %s/ %s\n",article.id , article.title , article.body);
-
-        }
-
       }
-
+      else if (rq.getUrlPath().equals("/usr/article/list")) {
+      actionlist(rq, articles);
+      }
       else if (rq.getUrlPath().equals("/usr/article/write")) {
-        System.out.println("== 게시물 등록 ==");
-        System.out.printf("제목 : ");
-        String title = sc.nextLine();
-        System.out.printf("내용 : ");
-        String body = sc.nextLine();
-        int id = articleLastId + 1;
-        articleLastId = id;
-        Article article = new Article(id, title, body);
-        articles.add(article);
-        System.out.println("생성 된 게시물 객체 : " + article);
-        System.out.printf("%d번 게시물이 입력 되었습니다.\n", article.id);
-      } else if (rq.getUrlPath().equals("/usr/article/detail")) {
-
-        if (params.containsKey("id") == false){
-          System.out.printf("id를 입력해주세요.");
-          continue;
-        }
-
-
-        int id =0;
-        try {
-          id = Integer.parseInt(params.get("id"));
-        }
-        catch (NumberFormatException e){
-          System.out.println("id를 정수 형태로 입력해주세요.");
-          continue;
-        }
-
-        Article article = articles.get(id - 1);
-
-        if (id > articles.size()) {
-          System.out.println("게시물이 존재하지 않습니다.");
-          continue;
-        }
-
-
-        System.out.println("== 게시물 상세내용 ==");
-        System.out.printf("번호 : %d\n", article.id);
-        System.out.printf("제목 : %s\n", article.title);
-
-
-        System.out.printf("내용 : %s\n", article.body);
-      } else {
+        actionwrite(sc, articleLastId ,articles);
+      }
+      else if (rq.getUrlPath().equals("/usr/article/detail")) {
+        actiondetail(rq, articles);
+      }
+        else {
         System.out.printf("입력 된 명령어 : %s\n", cmd);
       }
     }
     System.out.println("== 프로그램 종료 ==");
     sc.close();
   }
+////////////////////////////////////////////////디테일///////////////////////////////////////
+  public static void actiondetail(Rq rq, List<Article> articles) {
+    Map<String, String> params = rq.getParams();
+      if (params.containsKey("id") == false){
+        System.out.printf("id를 입력해주세요.");
+        return;
+      }
+
+
+      int id =0;
+      try {
+        id = Integer.parseInt(params.get("id"));
+      }
+      catch (NumberFormatException e){
+        System.out.println("id를 정수 형태로 입력해주세요.");
+        return;
+      }
+
+      Article article = articles.get(id - 1);
+
+      if (id > articles.size()) {
+        System.out.println("게시물이 존재하지 않습니다.");
+        return;
+      }
+
+
+      System.out.println("== 게시물 상세내용 ==");
+      System.out.printf("번호 : %d\n", article.id);
+      System.out.printf("제목 : %s\n", article.title);
+
+
+      System.out.printf("내용 : %s\n", article.body);
+    }
+
+
+
+  //////////////////////////////////////쓰기/////////////////////////////////////////////////
+  public static void actionwrite(Scanner sc, int articleLastId, List<Article> articles) {
+    System.out.println("== 게시물 등록 ==");
+    System.out.printf("제목 : ");
+    String title = sc.nextLine();
+    System.out.printf("내용 : ");
+    String body = sc.nextLine();
+    int id = ++articleLastId;
+    Article article = new Article(id, title, body);
+    articles.add(article);
+    System.out.println("생성 된 게시물 객체 : " + article);
+    System.out.printf("%d번 게시물이 입력 되었습니다.\n", article.id);
+  }
+
+/////////////////////////////////////////////////////////////////리스트////////////////
+public static void actionlist(Rq rq,List<Article> articles) {
+    System.out.println("== 게시물 리스트 ==");
+    System.out.println("-------------------");
+    System.out.println("번호 / 제목 / 내용");
+    System.out.println("-------------------");
+
+    Map<String, String> params = rq.getParams();
+    //검색시작
+    List<Article> fileredArticles = articles;
+
+    if(params.containsKey("searchKeyword")) {
+      String searchKeyword = params.get("searchKeyword");
+
+      fileredArticles = new ArrayList<>();
+      for (Article article: articles) {
+        boolean matched = article.title.contains(searchKeyword) || article.body.contains(searchKeyword);
+
+        if (matched){
+          fileredArticles.add(article);
+        }
+
+      }
+
+    }
+    //검색끝
+
+    List<Article> sortedArticles =fileredArticles;
+
+    boolean orderByIdDesc = true;
+
+    if(params.containsKey("orderBy") && params.get("orderBy").equals("idAsc")){
+      orderByIdDesc =false;
+
+    }
+    if(orderByIdDesc){
+      sortedArticles = Util.reverseList(sortedArticles);
+    }
+    for (Article article: sortedArticles) {
+      System.out.printf("%d/ %s/ %s\n",article.id , article.title , article.body);
+
+    }
+///////////////////////////////////////////////////////////////////////////////////////
+  }
 }
+
+
+
+
+
+
 
 class Article {
   int id;
@@ -144,6 +166,12 @@ class Article {
   }
 }
 
+
+
+
+
+
+
 class Rq {
   private String url; // 접근제어자를 붙이는게 관례. 외부에서 접근 불가능.
   private String urlPath;
@@ -152,6 +180,7 @@ class Rq {
   // 인스턴스 변수 -> 여기에 다 붙임
   // 필드추가가능
   // 수정가능
+
   Rq(String url) {
     this.url = url;
     urlPath = Util.getUrlPathFromUrl(this.url);
@@ -168,6 +197,17 @@ class Rq {
     return urlPath;
   }
 }
+
+
+
+
+
+
+
+
+
+
+
 
 // 수정불가능
 class Util {
