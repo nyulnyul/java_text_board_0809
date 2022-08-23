@@ -14,7 +14,7 @@ public class Main {
   }
 
   public static void main(String[] args) {
-    Scanner sc = new Scanner(System.in);
+    Scanner sc = Conatainer.sc;
 
     makeTestData();
     if (articles.size() > 0) {
@@ -34,12 +34,12 @@ public class Main {
       } else if (rq.getUrlPath().equals("/usr/article/list")) {
         actionlist(rq);
       } else if (rq.getUrlPath().equals("/usr/article/write")) {
-        actionwrite(sc);
+        actionwrite();
 
       } else if (rq.getUrlPath().equals("/usr/article/detail")) {
         actiondetail(rq);
       } else if (rq.getUrlPath().equals("/usr/article/modify")) {
-        actionmodify(sc,rq);
+        actionmodify(rq);
       }else if (rq.getUrlPath().equals("/usr/article/delete")) {
         actiondelete(rq);
       }
@@ -50,7 +50,7 @@ public class Main {
     System.out.println("== 프로그램 종료 ==");
     sc.close();
   }
-
+/////////////////////////////////////////////////////////////////////////
   private static void actiondelete(Rq rq) {
     Map<String, String>params = rq.getParams();
     if (params.containsKey("id") == false){
@@ -84,8 +84,8 @@ public class Main {
 
 
   }
-
-  private static void actionmodify(Scanner sc, Rq rq) {
+////////////////////////////////////////////////////////////////////////////////////
+  private static void actionmodify( Rq rq) {
     Map<String, String> params = rq.getParams();
 
     if (params.containsKey("id") == false){
@@ -110,9 +110,9 @@ public class Main {
 
     System.out.println("수정할 내용을 입력해주세요");
     System.out.printf("제목 : ");
-    article.title = sc.nextLine();
+    article.title = Conatainer.sc.nextLine();
     System.out.printf("내용 : ");
-    article.body = sc.nextLine();
+    article.body = Conatainer.sc.nextLine();
 
     System.out.printf("%d번 게시물을 수정하였습니다. \n",article.id);
   }
@@ -158,12 +158,12 @@ public class Main {
 
 
   //////////////////////////////////////쓰기/////////////////////////////////////////////////
-  public static void actionwrite(Scanner sc) {
+  public static void actionwrite() {
     System.out.println("== 게시물 등록 ==");
     System.out.printf("제목 : ");
-    String title = sc.nextLine();
+    String title = Conatainer.sc.nextLine();
     System.out.printf("내용 : ");
-    String body = sc.nextLine();
+    String body = Conatainer.sc.nextLine();
     int id = ++articleLastId;
     articleLastId++;
     Article article = new Article(id, title, body);
@@ -224,22 +224,6 @@ public static void actionlist(Rq rq) {
 
 
 
-class Article {
-  int id;
-  String title;
-  String body;
-
-  Article(int id, String title, String body) {
-    this.id = id;
-    this.title = title;
-    this.body = body;
-  }
-
-  @Override
-  public String toString() {
-    return String.format("{id : %d, title : \"%s\", body : \"%s\"}", id, title, body);
-  }
-}
 
 
 
@@ -247,31 +231,7 @@ class Article {
 
 
 
-class Rq {
-  private String url; // 접근제어자를 붙이는게 관례. 외부에서 접근 불가능.
-  private String urlPath;
-  private Map<String, String> params;
 
-  // 인스턴스 변수 -> 여기에 다 붙임
-  // 필드추가가능
-  // 수정가능
-
-  Rq(String url) {
-    this.url = url;
-    urlPath = Util.getUrlPathFromUrl(this.url);
-    params = Util.getParamsFromUrl(this.url);
-  }
-
-  // 수정가능, if문 금지
-  public Map<String, String> getParams() {
-    return params;
-  }
-
-  // 수정가능, if문 금지
-  public String getUrlPath() {
-    return urlPath;
-  }
-}
 
 
 
@@ -285,35 +245,3 @@ class Rq {
 
 
 // 수정불가능
-class Util {
-  static Map<String, String> getParamsFromUrl(String url) {
-    Map<String, String> params = new HashMap<>();
-    String[] urlBits = url.split("\\?", 2);
-    if (urlBits.length == 1) {
-      return params;
-    }
-
-    String queryStr = urlBits[1];
-    for (String bit : queryStr.split("&")) {
-      String[] bits = bit.split("=", 2);
-      if (bits.length == 1) {
-        continue;
-      }
-      params.put(bits[0], bits[1]);
-    }
-    return params;
-
-  }
-
-  static String getUrlPathFromUrl(String url) {
-    return url.split("\\?", 2)[0];
-  }
-  public static<T> List<T> reverseList(List<T> list) {
-    List<T> reverse = new ArrayList<>(list.size());
-
-    for ( int i = list.size() - 1; i >= 0; i-- ) {
-      reverse.add(list.get(i));
-    }
-    return reverse;
-  }
-}
