@@ -65,14 +65,21 @@ public class Main {
       return;
     }
 
-    Article article = articles.get(id - 1);
+    Article foundarticle = null;
+    for (Article article: articles) {
+      if(article.id == id){
+        foundarticle =article;
+        break;
+      }
 
-    if (id > articles.size()) {
-      System.out.println("게시물이 존재하지 않습니다.");
+    }
+
+    if (foundarticle==null) {
+      System.out.printf("%d번 게시물이 존재하지 않습니다.\n",id);
       return;
     }
-    articles.remove(article);
-    System.out.printf("%d번 게시물을 삭제하였습니다. \n",article.id);
+    articles.remove(foundarticle);
+    System.out.printf("%d번 게시물을 삭제하였습니다. \n",foundarticle.id);
 
 
   }
