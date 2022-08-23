@@ -3,7 +3,9 @@ package com.sey.exam.board;
 import java.util.*;
 
 public class Main {
-  static void makeTestData(List<Article> articles) {
+ static int articleLastId = 0;
+  static List<Article> articles = new ArrayList<>();
+  static void makeTestData() {
     for (int i = 0; i < 100; i++) {
       int id = i + 1;
       articles.add(new Article(id, "제목" + id, "내용" + id));
@@ -13,9 +15,8 @@ public class Main {
 
   public static void main(String[] args) {
     Scanner sc = new Scanner(System.in);
-    int articleLastId = 0;
-    List<Article> articles = new ArrayList<>();
-    makeTestData(articles);
+
+    makeTestData();
     if (articles.size() > 0) {
       articleLastId = articles.get(articles.size() - 1).id;
     }
@@ -31,16 +32,16 @@ public class Main {
       if (rq.getUrlPath().equals("exit")) {
         break;
       } else if (rq.getUrlPath().equals("/usr/article/list")) {
-        actionlist(rq, articles);
+        actionlist(rq);
       } else if (rq.getUrlPath().equals("/usr/article/write")) {
-        actionwrite(sc, articleLastId, articles);
-        articleLastId++;
+        actionwrite(sc);
+
       } else if (rq.getUrlPath().equals("/usr/article/detail")) {
-        actiondetail(rq, articles);
+        actiondetail(rq);
       } else if (rq.getUrlPath().equals("/usr/article/modify")) {
-        actionmodify(sc,rq ,articles);
+        actionmodify(sc,rq);
       }else if (rq.getUrlPath().equals("/usr/article/delete")) {
-        actiondelete(rq, articles);
+        actiondelete(rq);
       }
       else {
         System.out.printf("입력 된 명령어 : %s\n", cmd);
@@ -50,7 +51,7 @@ public class Main {
     sc.close();
   }
 
-  private static void actiondelete(Rq rq, List<Article> articles) {
+  private static void actiondelete(Rq rq) {
     Map<String, String>params = rq.getParams();
     if (params.containsKey("id") == false){
       System.out.printf("id를 입력해주세요.");
@@ -84,7 +85,7 @@ public class Main {
 
   }
 
-  private static void actionmodify(Scanner sc, Rq rq, List<Article> articles) {
+  private static void actionmodify(Scanner sc, Rq rq) {
     Map<String, String> params = rq.getParams();
 
     if (params.containsKey("id") == false){
@@ -119,7 +120,7 @@ public class Main {
 
 
   ////////////////////////////////////////////////디테일///////////////////////////////////////
-  public static void actiondetail(Rq rq, List<Article> articles) {
+  public static void actiondetail(Rq rq) {
     Map<String, String> params = rq.getParams();
       if (params.containsKey("id") == false){
         System.out.printf("id를 입력해주세요.");
@@ -157,13 +158,14 @@ public class Main {
 
 
   //////////////////////////////////////쓰기/////////////////////////////////////////////////
-  public static void actionwrite(Scanner sc, int articleLastId, List<Article> articles) {
+  public static void actionwrite(Scanner sc) {
     System.out.println("== 게시물 등록 ==");
     System.out.printf("제목 : ");
     String title = sc.nextLine();
     System.out.printf("내용 : ");
     String body = sc.nextLine();
     int id = ++articleLastId;
+    articleLastId++;
     Article article = new Article(id, title, body);
     articles.add(article);
     System.out.println("생성 된 게시물 객체 : " + article);
@@ -171,7 +173,7 @@ public class Main {
   }
 
 /////////////////////////////////////////////////////////////////리스트////////////////
-public static void actionlist(Rq rq,List<Article> articles) {
+public static void actionlist(Rq rq) {
     System.out.println("== 게시물 리스트 ==");
     System.out.println("-------------------");
     System.out.println("번호 / 제목 / 내용");
